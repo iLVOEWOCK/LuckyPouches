@@ -93,7 +93,9 @@ class PouchCommand extends Command implements PluginOwned {
                             try {
                                 $pouchType = PouchItem::getPouchType($identifier, $amount);
                                 $onlinePlayer->getInventory()->addItem($pouchType);
-                                Server::getInstance()->broadcastMessage(C::colorize($msg_cfg->get("give-all")));
+                                $give_all = $msg_cfg->get("give-all");
+                                $give_all = str_replace(["{prefix}", "{type}"], [$msg_cfg->get("prefix"), $identifier], $give_all);
+                                Server::getInstance()->broadcastMessage(C::colorize($give_all));
                             } catch (Exception $e) {
                                 $sender->sendMessage("Error while giving pouch to players: " . $e->getMessage());
                             }
