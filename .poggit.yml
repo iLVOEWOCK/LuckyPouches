@@ -5,4 +5,5 @@ branches:
 projects:
   LuckyPouches:
     path: ""
+    icon: "icon.png"
 ...
