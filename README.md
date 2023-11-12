@@ -3,6 +3,10 @@
 ![Plugin Version](https://img.shields.io/badge/Version-v1.0.0-brightgreen)
 ![License](https://img.shields.io/badge/License-APACHE-blue)
 ![PocketMine API](https://img.shields.io/badge/PocketMine%20API-5.0.0-purple)
+[![](https://poggit.pmmp.io/shield.state/LuckyPouches)](https://poggit.pmmp.io/p/LuckyPouches)
+<a href="https://poggit.pmmp.io/p/LuckyPouches"><img src="https://poggit.pmmp.io/shield.state/LuckyPouches"></a>
+[![](https://poggit.pmmp.io/shield.api/LuckyPouches)](https://poggit.pmmp.io/p/LuckyPouches)
+<a href="https://poggit.pmmp.io/p/LuckyPouches"><img src="https://poggit.pmmp.io/shield.api/LuckyPouches"></a>
 
 ## Description
 
