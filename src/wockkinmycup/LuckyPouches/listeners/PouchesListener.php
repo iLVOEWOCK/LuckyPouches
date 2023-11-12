@@ -9,6 +9,8 @@ use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\Config;
 use wockkinmycup\LuckyPouches\Loader;
+use wockkinmycup\LuckyPouches\tasks\ActionBarRevealTask;
+use wockkinmycup\LuckyPouches\tasks\BossBarRevealTask;
 use wockkinmycup\LuckyPouches\tasks\TitleRevealTask;
 use pocketmine\utils\TextFormat as C;
 use wockkinmycup\LuckyPouches\utils\Utils;
@@ -55,42 +57,60 @@ class PouchesListener implements Listener
                 throw new Exception("Invalid pouch identifier: $pouchTag");
             }
             $pouchData = $configArray["pouches"][$pouchTag];
+            $currency = $pouchData["currency"];
 
             $animation = isset($pouchData["animation"]) ? strtoupper($pouchData["animation"]) : "NONE";
 
             switch ($animation) {
                 case "TITLE":
-                    $this->pouchCooldown[$player->getName()] = $currentTime + $config->get("animations.title.cooldown");
+                    $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.title.cooldown");
                     Loader::getInstance()->getScheduler()->scheduleDelayedTask(
                         new ClosureTask(function () use ($player) {
                             unset($this->pouchCooldown[$player->getName()]);
                         }),
-                        $config->get("animations.title.cooldown") * 20
+                        $config->getNested("animations.title.cooldown") * 20
                     );
                     $item->setCount($item->getCount() - 1);
                     $player->getInventory()->setItemInHand($item);
                     $minAmount = $pouchData["min"];
                     $maxAmount = $pouchData["max"];
-                    $money = mt_rand($minAmount, $maxAmount);
-                    //$obfuscatedTitle = "§k" . str_repeat("#", strlen((string)$money));
-                    //$player->sendTitle($obfuscatedTitle, C::colorize($config->get("animations.title.subtitle")), 1, 2);
-                    $task = new TitleRevealTask($player, $money);
+                    $winnings = mt_rand($minAmount, $maxAmount);
+                    $task = new TitleRevealTask($player, $winnings, $pouchTag);
                     Loader::getInstance()->getScheduler()->scheduleRepeatingTask($task, 10);
-                    if ($config->get("animations.title.show_prize_message") === true) {
-                        $msg = $messages->get("prize_message");
-                        $msg = str_replace(["{prefix}", "{prize}"], [$messages->get("prefix"), $money],  $msg);
-                        $player->sendMessage(C::colorize($msg));
-                    }
                     break;
 
                 case "ACTIONBAR":
-                    // Handle ACTIONBAR animation here
-                    // You can add code for ACTIONBAR animation
+                    $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.actionbar.cooldown");
+                    Loader::getInstance()->getScheduler()->scheduleDelayedTask(
+                        new ClosureTask(function () use ($player) {
+                            unset($this->pouchCooldown[$player->getName()]);
+                        }),
+                        $config->getNested("animations.actionbar.cooldown") * 20
+                    );
+                    $item->setCount($item->getCount() - 1);
+                    $player->getInventory()->setItemInHand($item);
+                    $minAmount = $pouchData["min"];
+                    $maxAmount = $pouchData["max"];
+                    $winnings = mt_rand($minAmount, $maxAmount);
+                    $task = new ActionBarRevealTask($player, $winnings, $pouchTag);
+                    Loader::getInstance()->getScheduler()->scheduleRepeatingTask($task, 10);
                     break;
 
                 case "BOSSBAR":
-                    // Handle BOSSBAR animation here
-                    // You can add code for BOSSBAR animation
+                    $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.bossbar.cooldown");
+                    Loader::getInstance()->getScheduler()->scheduleDelayedTask(
+                        new ClosureTask(function () use ($player) {
+                            unset($this->pouchCooldown[$player->getName()]);
+                        }),
+                        $config->getNested("animations.bossbar.cooldown") * 20
+                    );
+                    $item->setCount($item->getCount() - 1);
+                    $player->getInventory()->setItemInHand($item);
+                    $minAmount = $pouchData["min"];
+                    $maxAmount = $pouchData["max"];
+                    $winnings = mt_rand($minAmount, $maxAmount);
+                    $task = new BossBarRevealTask($player, $winnings, $pouchTag);
+                    Loader::getInstance()->getScheduler()->scheduleRepeatingTask($task, 10);
                     break;
 
                 case "RANDOM":
@@ -99,15 +119,23 @@ class PouchesListener implements Listener
                     break;
 
                 case "NONE":
-                    $this->pouchCooldown[$player->getName()] = $currentTime + $config->get("animations.none.cooldown");
+                    $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.none.cooldown");
                     $item->setCount($item->getCount() - 1);
                     $player->getInventory()->setItemInHand($item);
                     $minAmount = $pouchData["min"];
                     $maxAmount = $pouchData["max"];
                     $money = mt_rand($minAmount, $maxAmount);
-                    $prize_msg = $messages->get("prize_message");
-                    $prize_msg = str_replace(["{prefix}", "{prize}"], [$messages->get("prefix"), $money], $prize_msg);
-                    $player->sendMessage(C::colorize($prize_msg));
+                    if ($currency === "BEDROCKECONOMY") {
+                        $prize_msg = $messages->get("prize_message");
+                        $prize_msg = str_replace(["{prefix}", "{prize}"], [$messages->get("prefix"), number_format($money)], $prize_msg);
+                        $player->sendMessage(C::colorize($prize_msg));
+                    }
+
+                    if ($currency === "XP") {
+                        $prize_msg = $messages->get("prize_xp_message");
+                        $prize_msg = str_replace(["{prefix}", "{prize}"], [$messages->get("prefix"), number_format($money)], $prize_msg);
+                        $player->sendMessage(C::colorize($prize_msg));
+                    }
                     break;
 
                 default:
