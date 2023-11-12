@@ -74,6 +74,7 @@ animations:
 
     # Should this animation also send the Prize Message to the player?
     show_prize_message: true
+    show_prize_xp_message: true
 
     # What sound should be played? (Empty for no sound)
     sound: ''
@@ -95,6 +96,7 @@ animations:
 
     # Should the title Animation also send the Prize Message to the player?
     show_prize_message: true
+    show_prize_xp_message: true
 
     # The color code that the Prefix will be displayed with
     prefix_color: '&a'
@@ -107,9 +109,6 @@ animations:
 
     # The color code that the Obfuscated Digits will be displayed with
     obfuscate_color: '&b'
-
-    # The Title Message
-    title: '{reward}'
 
     # The Subtitle Message
     subtitle: '&r&fOpening Pouch...'
@@ -131,6 +130,7 @@ animations:
 
     # Should the actionbar Animation also send the Prize Message to the player?
     show_prize_message: false
+    show_prize_xp_message: false
 
     # The color code that the Prefix will be displayed with
     prefix_color: '&a'
@@ -143,12 +143,6 @@ animations:
 
     # The color code that the Obfuscated Digits will be displayed with
     obfuscate_color: '&b'
-
-    # Should the amount be formatted? (ie: 1,523,640)
-    format: true
-
-    # Should the Amount start getting shown Right to Left?
-    right_to_left: true
 
     # The Actionbar Message
     actionbar: '&fYou have earned {reward}'
@@ -170,6 +164,7 @@ animations:
 
     # Should the bossbar Animation also send the Prize Message to the player?
     show_prize_message: false
+    show_prize_xp_message: false
 
     # The color code that the Prefix will be displayed with
     prefix_color: '&a'
@@ -183,12 +178,6 @@ animations:
     # The color code that the Obfuscated Digits will be displayed with
     obfuscate_color: '&b'
 
-    # Should the amount be formatted? (ie: 1,523,640)
-    format: true
-
-    # Should the comma be shown?
-    reveal_comma: false
-
     # The BossBar Message
     text: '&fYour prize is {reward}'
 
@@ -200,3 +189,4 @@ animations:
 
     # Should the bossbar Animation also send the Prize Message to the player?
     show_prize_message: true
+    show_prize_xp_message: false
