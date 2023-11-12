@@ -61,85 +61,158 @@ class PouchesListener implements Listener
 
             $animation = isset($pouchData["animation"]) ? strtoupper($pouchData["animation"]) : "NONE";
 
-            switch ($animation) {
-                case "TITLE":
-                    $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.title.cooldown");
-                    Loader::getInstance()->getScheduler()->scheduleDelayedTask(
-                        new ClosureTask(function () use ($player) {
-                            unset($this->pouchCooldown[$player->getName()]);
-                        }),
-                        $config->getNested("animations.title.cooldown") * 20
-                    );
-                    $item->setCount($item->getCount() - 1);
-                    $player->getInventory()->setItemInHand($item);
-                    $minAmount = $pouchData["min"];
-                    $maxAmount = $pouchData["max"];
-                    $winnings = mt_rand($minAmount, $maxAmount);
-                    $task = new TitleRevealTask($player, $winnings, $pouchTag);
-                    Loader::getInstance()->getScheduler()->scheduleRepeatingTask($task, 10);
-                    break;
+            if ($animation === "RANDOM") {
+                $availableAnimations = ["TITLE", "ACTIONBAR", "BOSSBAR", "NONE"];
+                $randomAnimation = $availableAnimations[array_rand($availableAnimations)];
 
-                case "ACTIONBAR":
-                    $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.actionbar.cooldown");
-                    Loader::getInstance()->getScheduler()->scheduleDelayedTask(
-                        new ClosureTask(function () use ($player) {
-                            unset($this->pouchCooldown[$player->getName()]);
-                        }),
-                        $config->getNested("animations.actionbar.cooldown") * 20
-                    );
-                    $item->setCount($item->getCount() - 1);
-                    $player->getInventory()->setItemInHand($item);
-                    $minAmount = $pouchData["min"];
-                    $maxAmount = $pouchData["max"];
-                    $winnings = mt_rand($minAmount, $maxAmount);
-                    $task = new ActionBarRevealTask($player, $winnings, $pouchTag);
-                    Loader::getInstance()->getScheduler()->scheduleRepeatingTask($task, 10);
-                    break;
+                switch ($randomAnimation) {
+                    case "TITLE":
+                        $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.title.cooldown");
+                        Loader::getInstance()->getScheduler()->scheduleDelayedTask(
+                            new ClosureTask(function () use ($player) {
+                                unset($this->pouchCooldown[$player->getName()]);
+                            }),
+                            $config->getNested("animations.title.cooldown") * 20
+                        );
+                        $item->setCount($item->getCount() - 1);
+                        $player->getInventory()->setItemInHand($item);
+                        $minAmount = $pouchData["min"];
+                        $maxAmount = $pouchData["max"];
+                        $winnings = mt_rand($minAmount, $maxAmount);
+                        $task = new TitleRevealTask($player, $winnings, $pouchTag);
+                        Loader::getInstance()->getScheduler()->scheduleRepeatingTask($task, 10);
+                        break;
 
-                case "BOSSBAR":
-                    $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.bossbar.cooldown");
-                    Loader::getInstance()->getScheduler()->scheduleDelayedTask(
-                        new ClosureTask(function () use ($player) {
-                            unset($this->pouchCooldown[$player->getName()]);
-                        }),
-                        $config->getNested("animations.bossbar.cooldown") * 20
-                    );
-                    $item->setCount($item->getCount() - 1);
-                    $player->getInventory()->setItemInHand($item);
-                    $minAmount = $pouchData["min"];
-                    $maxAmount = $pouchData["max"];
-                    $winnings = mt_rand($minAmount, $maxAmount);
-                    $task = new BossBarRevealTask($player, $winnings, $pouchTag);
-                    Loader::getInstance()->getScheduler()->scheduleRepeatingTask($task, 10);
-                    break;
+                    case "ACTIONBAR":
+                        $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.actionbar.cooldown");
+                        Loader::getInstance()->getScheduler()->scheduleDelayedTask(
+                            new ClosureTask(function () use ($player) {
+                                unset($this->pouchCooldown[$player->getName()]);
+                            }),
+                            $config->getNested("animations.actionbar.cooldown") * 20
+                        );
+                        $item->setCount($item->getCount() - 1);
+                        $player->getInventory()->setItemInHand($item);
+                        $minAmount = $pouchData["min"];
+                        $maxAmount = $pouchData["max"];
+                        $winnings = mt_rand($minAmount, $maxAmount);
+                        $task = new ActionBarRevealTask($player, $winnings, $pouchTag);
+                        Loader::getInstance()->getScheduler()->scheduleRepeatingTask($task, 10);
+                        break;
 
-                case "RANDOM":
-                    // Handle RANDOM animation here
-                    // You can add code for RANDOM animation
-                    break;
+                    case "BOSSBAR":
+                        $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.bossbar.cooldown");
+                        Loader::getInstance()->getScheduler()->scheduleDelayedTask(
+                            new ClosureTask(function () use ($player) {
+                                unset($this->pouchCooldown[$player->getName()]);
+                            }),
+                            $config->getNested("animations.bossbar.cooldown") * 20
+                        );
+                        $item->setCount($item->getCount() - 1);
+                        $player->getInventory()->setItemInHand($item);
+                        $minAmount = $pouchData["min"];
+                        $maxAmount = $pouchData["max"];
+                        $winnings = mt_rand($minAmount, $maxAmount);
+                        $task = new BossBarRevealTask($player, $winnings, $pouchTag);
+                        Loader::getInstance()->getScheduler()->scheduleRepeatingTask($task, 10);
+                        break;
 
-                case "NONE":
-                    $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.none.cooldown");
-                    $item->setCount($item->getCount() - 1);
-                    $player->getInventory()->setItemInHand($item);
-                    $minAmount = $pouchData["min"];
-                    $maxAmount = $pouchData["max"];
-                    $money = mt_rand($minAmount, $maxAmount);
-                    if ($currency === "BEDROCKECONOMY") {
-                        $prize_msg = $messages->get("prize_message");
-                        $prize_msg = str_replace(["{prefix}", "{prize}"], [$messages->get("prefix"), number_format($money)], $prize_msg);
-                        $player->sendMessage(C::colorize($prize_msg));
-                    }
+                    case "NONE":
+                        $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.none.cooldown");
+                        $item->setCount($item->getCount() - 1);
+                        $player->getInventory()->setItemInHand($item);
+                        $minAmount = $pouchData["min"];
+                        $maxAmount = $pouchData["max"];
+                        $money = mt_rand($minAmount, $maxAmount);
+                        if ($currency === "BEDROCKECONOMY") {
+                            $prize_msg = $messages->get("prize_message");
+                            $prize_msg = str_replace(["{prefix}", "{prize}"], [$messages->get("prefix"), number_format($money)], $prize_msg);
+                            $player->sendMessage(C::colorize($prize_msg));
+                        }
 
-                    if ($currency === "XP") {
-                        $prize_msg = $messages->get("prize_xp_message");
-                        $prize_msg = str_replace(["{prefix}", "{prize}"], [$messages->get("prefix"), number_format($money)], $prize_msg);
-                        $player->sendMessage(C::colorize($prize_msg));
-                    }
-                    break;
+                        if ($currency === "XP") {
+                            $prize_msg = $messages->get("prize_xp_message");
+                            $prize_msg = str_replace(["{prefix}", "{prize}"], [$messages->get("prefix"), number_format($money)], $prize_msg);
+                            $player->sendMessage(C::colorize($prize_msg));
+                        }
+                        break;
+                }
+            } else {
+                switch ($animation) {
+                    case "TITLE":
+                        $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.title.cooldown");
+                        Loader::getInstance()->getScheduler()->scheduleDelayedTask(
+                            new ClosureTask(function () use ($player) {
+                                unset($this->pouchCooldown[$player->getName()]);
+                            }),
+                            $config->getNested("animations.title.cooldown") * 20
+                        );
+                        $item->setCount($item->getCount() - 1);
+                        $player->getInventory()->setItemInHand($item);
+                        $minAmount = $pouchData["min"];
+                        $maxAmount = $pouchData["max"];
+                        $winnings = mt_rand($minAmount, $maxAmount);
+                        $task = new TitleRevealTask($player, $winnings, $pouchTag);
+                        Loader::getInstance()->getScheduler()->scheduleRepeatingTask($task, 10);
+                        break;
 
-                default:
-                    $player->sendMessage(C::RED . C::BOLD . "[!]" . C::RESET . C::GRAY . " Invalid animation type: $animation");
+                    case "ACTIONBAR":
+                        $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.actionbar.cooldown");
+                        Loader::getInstance()->getScheduler()->scheduleDelayedTask(
+                            new ClosureTask(function () use ($player) {
+                                unset($this->pouchCooldown[$player->getName()]);
+                            }),
+                            $config->getNested("animations.actionbar.cooldown") * 20
+                        );
+                        $item->setCount($item->getCount() - 1);
+                        $player->getInventory()->setItemInHand($item);
+                        $minAmount = $pouchData["min"];
+                        $maxAmount = $pouchData["max"];
+                        $winnings = mt_rand($minAmount, $maxAmount);
+                        $task = new ActionBarRevealTask($player, $winnings, $pouchTag);
+                        Loader::getInstance()->getScheduler()->scheduleRepeatingTask($task, 10);
+                        break;
+
+                    case "BOSSBAR":
+                        $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.bossbar.cooldown");
+                        Loader::getInstance()->getScheduler()->scheduleDelayedTask(
+                            new ClosureTask(function () use ($player) {
+                                unset($this->pouchCooldown[$player->getName()]);
+                            }),
+                            $config->getNested("animations.bossbar.cooldown") * 20
+                        );
+                        $item->setCount($item->getCount() - 1);
+                        $player->getInventory()->setItemInHand($item);
+                        $minAmount = $pouchData["min"];
+                        $maxAmount = $pouchData["max"];
+                        $winnings = mt_rand($minAmount, $maxAmount);
+                        $task = new BossBarRevealTask($player, $winnings, $pouchTag);
+                        Loader::getInstance()->getScheduler()->scheduleRepeatingTask($task, 10);
+                        break;
+
+                    case "NONE":
+                        $this->pouchCooldown[$player->getName()] = $currentTime + $config->getNested("animations.none.cooldown");
+                        $item->setCount($item->getCount() - 1);
+                        $player->getInventory()->setItemInHand($item);
+                        $minAmount = $pouchData["min"];
+                        $maxAmount = $pouchData["max"];
+                        $money = mt_rand($minAmount, $maxAmount);
+                        if ($currency === "BEDROCKECONOMY") {
+                            $prize_msg = $messages->get("prize_message");
+                            $prize_msg = str_replace(["{prefix}", "{prize}"], [$messages->get("prefix"), number_format($money)], $prize_msg);
+                            $player->sendMessage(C::colorize($prize_msg));
+                        }
+
+                        if ($currency === "XP") {
+                            $prize_msg = $messages->get("prize_xp_message");
+                            $prize_msg = str_replace(["{prefix}", "{prize}"], [$messages->get("prefix"), number_format($money)], $prize_msg);
+                            $player->sendMessage(C::colorize($prize_msg));
+                        }
+                        break;
+
+                    default:
+                        $player->sendMessage(C::RED . C::BOLD . "[!]" . C::RESET . C::GRAY . " Invalid animation type: $animation");
+                }
             }
         }
         return true;
